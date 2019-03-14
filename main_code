@@ -1,0 +1,58 @@
+REPORT ZSERKAN_O_BAPI.
+
+TABLES : ZSB_T_MALZ2.
+DATA: BEGIN OF gs_malz,
+  V_MATNR      LIKE ZSB_T_MALZ2-V_MATNR,
+  V_MEINS      LIKE ZSB_T_MALZ2-V_MEINS,
+  V_MATL_TYPE  LIKE ZSB_T_MALZ2-V_MATL_TYPE,
+  V_IND_SECTOR LIKE ZSB_T_MALZ2-V_IND_SECTOR,
+  V_MAKTX      LIKE ZSB_T_MALZ2-V_MAKTX,
+  END OF gs_malz.
+
+  DATA: ok_code LIKE SY-UCOMM.
+
+  START-OF-SELECTION.
+       CALL SCREEN 100 STARTING AT 25 6.
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_0100  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE STATUS_0100 OUTPUT.
+  SET PF-STATUS 'STATUS_0100'.
+  SET TITLEBAR 'TITLEBAR_0100'.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0100  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE USER_COMMAND_0100 INPUT.
+  CASE ok_code.
+    WHEN 'CANCEL'.
+      LEAVE TO SCREEN 0.
+    WHEN 'CONT'.
+      PERFORM create_malz.
+
+      MESSAGE 'Malzeme oluşturuldu' TYPE 'S'.
+  ENDCASE.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Form  CREATE_MALZ
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM CREATE_MALZ .
+
+CALL FUNCTION 'ZSB_F_BAPI'
+  EXPORTING
+   V_MATNR           = ZSB_T_MALZ2-V_MATNR
+   V_MEINS           = ZSB_T_MALZ2-V_MEINS
+   V_MATL_TYPE       = ZSB_T_MALZ2-V_MATL_TYPE
+   V_IND_SECTOR      = ZSB_T_MALZ2-V_IND_SECTOR
+   V_MAKTX           = ZSB_T_MALZ2-V_MAKTX
+          .
+ENDFORM.
